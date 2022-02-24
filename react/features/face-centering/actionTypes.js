@@ -1,14 +1,3 @@
-// @flow
-
-/**
- * Redux action type dispatched in order to update coordinates of a detected face.
- *
- * {
- *      type: UPDATE_FACE_COORDINATES
- * }
- */
-export const UPDATE_FACE_COORDINATES = 'UPDATE_FACE_COORDINATES';
-
 /**
  * Redux action type dispatched in order to set the time interval in which
  * the message to the face centering worker will be sent.
@@ -38,3 +27,13 @@ export const START_FACE_RECOGNITION = 'START_FACE_RECOGNITION';
  */
 export const STOP_FACE_RECOGNITION = 'STOP_FACE_RECOGNITION';
 
+/**
+ * Redux action type dispatched in order to update coordinates of a detected face.
+ *
+ * {
+ *      type: UPDATE_FACE_COORDINATES,
+ *      faceBox: Object({ left, bottom, right, top }),
+ *      participantId: string
+ * }
+ */
+ export const UPDATE_FACE_COORDINATES = 'UPDATE_FACE_COORDINATES';

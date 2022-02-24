@@ -1,4 +1,3 @@
-// @flow
 import * as blazeface from '@tensorflow-models/blazeface';
 import { setWasmPaths } from '@tensorflow/tfjs-backend-wasm';
 import * as tf from '@tensorflow/tfjs-core';
@@ -62,21 +61,16 @@ const detect = async message => {
         };
 
         if (lastValidFaceBox && Math.abs(lastValidFaceBox.left - faceBox.left) < threshold) {
-            self.postMessage({
-                type: FACE_BOX_MESSAGE,
-                value: null
-            });
-
             return;
         }
 
         lastValidFaceBox = faceBox;
-    }
 
-    self.postMessage({
-        type: FACE_BOX_MESSAGE,
-        value: faceBox
-    });
+        self.postMessage({
+            type: FACE_BOX_MESSAGE,
+            value: faceBox
+        });
+    }
 };
 
 onmessage = function(message) {

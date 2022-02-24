@@ -1,4 +1,5 @@
 // @flow
+
 import { getBaseUrl } from '../base/util';
 
 import { FACE_BOX_EVENT_TYPE, DETECT_FACE_BOX } from './constants';
@@ -83,14 +84,14 @@ export function getFaceBoxForId(id: string, state: Object) {
     return state['features/face-centering'].faceBoxes[id];
 }
 
-/** ..........
+/**
  * Gets the video object position for a participant id.
  *
- * @param {string} id - The participant id.
  * @param {Object} state - The redux state.
+ * @param {string} id - The participant id.
  * @returns {string} - CSS object-position in the shape of '{horizontalPercentage}% {verticalPercentage}%'.
  */
-export function getVideoObjectPosition(id: string, state: Object) {
+export function getVideoObjectPosition(state: Object, id: string) {
     const faceBox = getFaceBoxForId(id, state);
 
     if (faceBox) {

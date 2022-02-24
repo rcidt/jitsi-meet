@@ -1,4 +1,5 @@
 // @flow
+
 import 'image-capture';
 
 import { getCurrentConference } from '../base/conference';
@@ -37,7 +38,7 @@ let worker;
 /**
  * Loads the worker.
  *
- * @returns {void}
+ * @returns {Function}
  */
 export function loadWorker() {
     return async function(dispatch: Function, getState: Function) {
@@ -59,10 +60,6 @@ export function loadWorker() {
 
             // receives a message with the face(s) bounding box.
             if (type === FACE_BOX_MESSAGE) {
-                if (!value) {
-                    return;
-                }
-
                 const state = getState();
                 const conference = getCurrentConference(state);
                 const localParticipant = getLocalParticipant(state);
@@ -90,7 +87,7 @@ export function loadWorker() {
  */
 export function startFaceRecognition() {
     return async function(dispatch: Function, getState: Function) {
-        if (worker === undefined || worker === null) {
+        if (!worker) {
             return;
         }
         const state = getState();
@@ -117,7 +114,6 @@ export function startFaceRecognition() {
 
         const firstVideoTrack = stream.getVideoTracks()[0];
 
-        // $FlowFixMe
         imageCapture = new ImageCapture(firstVideoTrack);
         const { disableLocalVideoFlip, faceCoordinatesSharing } = state['features/base/config'];
 
@@ -130,7 +126,7 @@ export function startFaceRecognition() {
 /**
  * Stops the recognition and detection of face position.
  *
- * @returns {void}
+ * @returns {Function}
  */
 export function stopFaceRecognition() {
     return function(dispatch: Function) {

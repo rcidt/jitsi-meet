@@ -1,5 +1,3 @@
-// @flow
-
 import { ReducerRegistry } from '../base/redux';
 
 import {
