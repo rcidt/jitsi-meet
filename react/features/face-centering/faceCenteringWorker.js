@@ -14,7 +14,15 @@ let model;
  */
 let backendSet = false;
 
+/**
+ * Flag for indicating whether an init operation (e.g setting tf backend) is in progress.
+ */
 let initInProgress = false;
+
+/**
+ * Callbacks queue for avoiding overlapping executions of face detection.
+ */
+const queue = [];
 
 /**
  * Contains the last valid face bounding box (passes threshold validation) which was sent to the main process.
@@ -41,6 +49,7 @@ const detect = async message => {
     if (!model) {
         model = await blazeface.load();
     }
+
 
     tf.engine().startScope();
 
@@ -75,6 +84,7 @@ const detect = async message => {
 
 onmessage = function(message) {
     if (message.data.id === DETECT_FACE_BOX) {
-        detect(message);
+        queue.push(() => detect(message));
+        queue.shift()();
     }
 };
