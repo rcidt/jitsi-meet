@@ -5,9 +5,7 @@ import {
 } from '../base/conference';
 import { JitsiConferenceEvents } from '../base/lib-jitsi-meet';
 import { MiddlewareRegistry } from '../base/redux';
-import { TRACK_UPDATED, TRACK_ADDED, TRACK_REMOVED } from '../base/tracks';
-import { changeTrack, resetTrack } from '../facial-recognition';
-import { VIRTUAL_BACKGROUND_TRACK_CHANGED } from '../virtual-background/actionTypes';
+import { TRACK_UPDATED, TRACK_REMOVED } from '../base/tracks';
 
 import { UPDATE_FACE_COORDINATES } from './actionTypes';
 import {
@@ -61,32 +59,24 @@ MiddlewareRegistry.register(({ dispatch, getState }) => next => action => {
         return next(action);
     }
     case TRACK_UPDATED: {
-        const { videoType, type } = action.track.jitsiTrack;
+        const { videoType } = action.track.jitsiTrack;
 
         if (videoType === 'camera') {
             const { muted, videoStarted } = action.track;
 
+            // addresses video starting for the first time
             if (videoStarted === true) {
                 dispatch(startFaceRecognition());
             }
+
             if (muted !== undefined) {
+                // addresses video mute state changes
                 if (muted) {
                     dispatch(stopFaceRecognition());
                 } else {
                     dispatch(startFaceRecognition());
-                    type === 'presenter' && changeTrack(action.track);
                 }
             }
-        }
-
-        return next(action);
-    }
-    case TRACK_ADDED: {
-        const { mediaType, videoType } = action.track;
-
-        if (mediaType === 'presenter' && videoType === 'camera') {
-            dispatch(startFaceRecognition());
-            changeTrack(action.track);
         }
 
         return next(action);
@@ -97,11 +87,6 @@ MiddlewareRegistry.register(({ dispatch, getState }) => next => action => {
         if ([ 'camera', 'desktop' ].includes(videoType)) {
             dispatch(stopFaceRecognition());
         }
-
-        return next(action);
-    }
-    case VIRTUAL_BACKGROUND_TRACK_CHANGED: {
-        dispatch(resetTrack());
 
         return next(action);
     }
