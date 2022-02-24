@@ -107,15 +107,10 @@ export function startFaceRecognition() {
             return;
         }
 
-        const stream = localVideoTrack.jitsiTrack.getOriginalStream();
-
-        if (!stream) {
-            return;
-        }
-
         dispatch({ type: START_FACE_RECOGNITION });
         logger.log('Start face recognition');
 
+        const stream = localVideoTrack.jitsiTrack.getOriginalStream();
         const firstVideoTrack = stream.getVideoTracks()[0];
 
         imageCapture = new ImageCapture(firstVideoTrack);
