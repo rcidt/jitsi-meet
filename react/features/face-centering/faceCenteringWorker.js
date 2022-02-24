@@ -5,6 +5,11 @@ import * as tf from '@tensorflow/tfjs-core';
 import { FACE_BOX_MESSAGE, DETECT_FACE_BOX } from './constants';
 
 /**
+ * Indicates whether an init error occured.
+ */
+let initError = false;
+
+/**
  * The blazeface model.
  */
 let model;
@@ -32,7 +37,7 @@ let lastValidFaceBox;
 const detect = async message => {
     const { baseUrl, imageData, isHorizontallyFlipped, threshold } = message.data;
 
-    if (initInProgress) {
+    if (initInProgress || initError) {
         return;
     }
 
@@ -40,14 +45,27 @@ const detect = async message => {
         initInProgress = true;
         setWasmPaths(`${baseUrl}libs/`);
 
-        await tf.setBackend('wasm');
+        try {
+            await tf.setBackend('wasm');
+        } catch (err) {
+            initError = true;
+
+            return;
+        }
+
         backendSet = true;
         initInProgress = false;
     }
 
     // load face detection model
     if (!model) {
-        model = await blazeface.load();
+        try {
+            model = await blazeface.load();
+        } catch (err) {
+            initError = true;
+
+            return;
+        }
     }
 
 
