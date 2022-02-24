@@ -9,8 +9,6 @@ import { JitsiConferenceEvents } from '../base/lib-jitsi-meet';
 import { MiddlewareRegistry } from '../base/redux';
 import { TRACK_UPDATED, TRACK_ADDED, TRACK_REMOVED } from '../base/tracks';
 import { changeTrack, resetTrack } from '../facial-recognition';
-import { shouldDisplayTileView } from '../video-layout';
-import { SET_TILE_VIEW } from '../video-layout/actionTypes';
 import { VIRTUAL_BACKGROUND_TRACK_CHANGED } from '../virtual-background/actionTypes';
 
 import { UPDATE_FACE_COORDINATES } from './actionTypes';
@@ -24,19 +22,14 @@ import { FACE_BOX_EVENT_TYPE } from './constants';
 MiddlewareRegistry.register(({ dispatch, getState }) => next => action => {
     const state = getState();
     const { faceCoordinatesSharing } = state['features/base/config'];
-    const isInTileView = shouldDisplayTileView(state);
 
-    if (!getCurrentConference(getState())) {
+    if (!getCurrentConference(state)) {
         return next(action);
     }
 
     if (action.type === CONFERENCE_JOINED) {
         if (faceCoordinatesSharing?.enabled) {
             dispatch(loadWorker());
-
-            if (isInTileView) {
-                dispatch(startFaceRecognition());
-            }
         }
 
         // allow using remote face centering data when local face centering is not enabled
@@ -60,21 +53,6 @@ MiddlewareRegistry.register(({ dispatch, getState }) => next => action => {
     }
 
     if (!faceCoordinatesSharing?.enabled) {
-        return next(action);
-    }
-
-    // might need to change logic here if object-fit: cover will be used outside of tileview in the future
-    if (action.type === SET_TILE_VIEW) {
-        if (action.enabled) {
-            dispatch(startFaceRecognition());
-        } else {
-            dispatch(stopFaceRecognition());
-        }
-
-        return next(action);
-    }
-
-    if (!isInTileView) {
         return next(action);
     }
 

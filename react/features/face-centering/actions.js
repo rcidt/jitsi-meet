@@ -4,8 +4,8 @@ import 'image-capture';
 import { getCurrentConference } from '../base/conference';
 import { getLocalParticipant, getParticipantCount } from '../base/participants';
 import { getLocalVideoTrack } from '../base/tracks';
+import { getBaseUrl } from '../base/util';
 import '../facial-recognition/createImageBitmap';
-import { getAppBaseUrl } from '../facial-recognition/functions';
 
 import {
     START_FACE_RECOGNITION,
@@ -47,8 +47,8 @@ export function loadWorker() {
             return;
         }
 
-        const baseUrl = getAppBaseUrl();
-        let workerUrl = `${baseUrl}face-centering-worker.min.js`;
+        const baseUrl = getBaseUrl();
+        let workerUrl = `${baseUrl}libs/face-centering-worker.min.js`;
 
         const workerBlob = new Blob([ `importScripts("${workerUrl}");` ], { type: 'application/javascript' });
 
@@ -78,13 +78,14 @@ export function loadWorker() {
                 });
             }
         };
+
+        dispatch(startFaceRecognition());
     };
 }
 
 /**
  * Starts the recognition and detection of face position.
  *
- * @param  {Object} stream - Video stream.
  * @returns {Function}
  */
 export function startFaceRecognition() {

@@ -8,7 +8,20 @@ import {
     UPDATE_FACE_COORDINATES
 } from './actionTypes';
 
+/**
+ * The default state object.
+ */
 const defaultState = {
+    /**
+     * Map of participant ids containing their respective facebox in the shape of a left, right, bottom, top percentages
+     * The percentages indicate the distance of the detected face starting edge (top or left) to the corresponding edge.
+     *
+     * Examples:
+     * 70% left indicates a 70% distance from the left edge of the video to the left edge of the detected face.
+     * 70% right indicates a 70% distance from the right edge of the video to the left edge of the detected face.
+     * 30% top indicates a 30% distance from the top edge of the video to the top edge of the detected face.
+     * 30% bottom indicates a 30% distance from the bottom edge of the video to the top edge of the detected face.
+     */
     faceBoxes: {},
     recognitionActive: false
 };

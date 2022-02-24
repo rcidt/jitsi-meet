@@ -1,5 +1,5 @@
 // @flow
-import { getAppBaseUrl } from '../facial-recognition/functions';
+import { getBaseUrl } from '../base/util';
 
 import { FACE_BOX_EVENT_TYPE, DETECT_FACE_BOX } from './constants';
 import logger from './logger';
@@ -65,14 +65,14 @@ export async function sendDataToWorker(
 
     worker.postMessage({
         id: DETECT_FACE_BOX,
-        baseUrl: getAppBaseUrl(),
+        baseUrl: getBaseUrl(),
         imageData,
         threshold,
         isHorizontallyFlipped
     });
 }
 
-/** ..........
+/**
  * Gets face box for a participant id.
  *
  * @param {string} id - The participant id.
@@ -88,7 +88,7 @@ export function getFaceBoxForId(id: string, state: Object) {
  *
  * @param {string} id - The participant id.
  * @param {Object} state - The redux state.
- * @returns {string}
+ * @returns {string} - CSS object-position in the shape of '{horizontalPercentage}% {verticalPercentage}%'.
  */
 export function getVideoObjectPosition(id: string, state: Object) {
     const faceBox = getFaceBoxForId(id, state);

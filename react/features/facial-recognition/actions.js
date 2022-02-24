@@ -1,8 +1,9 @@
 // @flow
-import { getLocalVideoTrack } from '../base/tracks';
-
 import 'image-capture';
 import './createImageBitmap';
+
+import { getLocalVideoTrack } from '../base/tracks';
+import { getBaseUrl } from '../base/util';
 
 import {
     ADD_FACIAL_EXPRESSION,
@@ -19,7 +20,7 @@ import {
     INTERVAL_MESSAGE,
     WEBHOOK_SEND_TIME_INTERVAL
 } from './constants';
-import { getAppBaseUrl, sendDataToWorker, sendFacialExpressionsWebhook } from './functions';
+import { sendDataToWorker, sendFacialExpressionsWebhook } from './functions';
 import logger from './logger';
 
 /**
@@ -66,8 +67,8 @@ export function loadWorker() {
             return;
         }
 
-        const baseUrl = getAppBaseUrl();
-        let workerUrl = `${baseUrl}facial-expressions-worker.min.js`;
+        const baseUrl = getBaseUrl();
+        let workerUrl = `${baseUrl}libs/facial-expressions-worker.min.js`;
 
         const workerBlob = new Blob([ `importScripts("${workerUrl}");` ], { type: 'application/javascript' });
 

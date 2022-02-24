@@ -15,19 +15,27 @@ let model;
  */
 let backendSet = false;
 
+let initInProgress = false;
+
 /**
- * Contains the last valid face bounding box (passes threshold validation) which was sent to the main process.s.
+ * Contains the last valid face bounding box (passes threshold validation) which was sent to the main process.
  */
 let lastValidFaceBox;
 
 const detect = async message => {
     const { baseUrl, imageData, isHorizontallyFlipped, threshold } = message.data;
 
+    if (initInProgress) {
+        return;
+    }
+
     if (!backendSet) {
-        setWasmPaths(baseUrl);
+        initInProgress = true;
+        setWasmPaths(`${baseUrl}libs/`);
 
         await tf.setBackend('wasm');
         backendSet = true;
+        initInProgress = false;
     }
 
     // load face detection model
@@ -71,7 +79,7 @@ const detect = async message => {
     });
 };
 
-onmessage = async function(message) {
+onmessage = function(message) {
     if (message.data.id === DETECT_FACE_BOX) {
         detect(message);
     }
