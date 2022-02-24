@@ -42,8 +42,8 @@ let worker;
  */
 export function loadWorker() {
     return async function(dispatch: Function, getState: Function) {
-        if (!window.Worker) {
-            logger.warn('Browser does not support web workers');
+        if (navigator.product === 'ReactNative') {
+            logger.warn('Unsupported environment for face centering');
 
             return;
         }
@@ -94,12 +94,16 @@ export function startFaceRecognition() {
         const { recognitionActive } = state['features/face-centering'];
 
         if (recognitionActive) {
+            logger.log('Face centering is not active.');
+
             return;
         }
 
         const localVideoTrack = getLocalVideoTrack(state['features/base/tracks']);
 
         if (!localVideoTrack) {
+            logger.warn('Face centering is disabled due to missing local track.');
+
             return;
         }
 
