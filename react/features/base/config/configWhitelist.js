@@ -39,6 +39,7 @@ export default [
      * @type string
      */
     'callDisplayName',
+    'customShareInfoText',
     'callFlowsEnabled',
 
     /**

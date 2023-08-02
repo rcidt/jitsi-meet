@@ -49,7 +49,7 @@ const ParticipantsPane = () => {
     const { t } = useTranslation();
 
     const { conference } = useSelector(state => state['features/base/conference']);
-    const _isBreakoutRoomsSupported = conference?.getBreakoutRooms()?.isSupported();
+    const _isBreakoutRoomsSupported = false; //conference?.getBreakoutRooms()?.isSupported();
     const currentRoomId = useSelector(getCurrentRoomId);
     const rooms: Array<Object> = Object.values(useSelector(getBreakoutRooms, equals))
         .filter((room: Object) => room.id !== currentRoomId)

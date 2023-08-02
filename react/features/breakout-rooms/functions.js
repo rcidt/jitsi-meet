@@ -97,7 +97,7 @@ export const isAddBreakoutRoomButtonVisible = (stateful: Function | Object) => {
     const state = toState(stateful);
     const isLocalModerator = isLocalParticipantModerator(state);
     const { conference } = state['features/base/conference'];
-    const isBreakoutRoomsSupported = conference?.getBreakoutRooms()?.isSupported();
+    const isBreakoutRoomsSupported = false; //conference?.getBreakoutRooms()?.isSupported();
     const { hideAddRoomButton } = getBreakoutRoomsConfig(state);
 
     return isLocalModerator && isBreakoutRoomsSupported && !hideAddRoomButton;

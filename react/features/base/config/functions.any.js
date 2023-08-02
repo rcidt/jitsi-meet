@@ -319,4 +319,15 @@ export function setConfigFromURLParams(
     overrideConfigJSON(config, interfaceConfig, loggingConfig, json);
 }
 
+/**
+ * Selector used to get a feature flag.
+ *
+ * @param {Object} state - The global state.
+ * @param {string} featureFlag - The name of the feature flag.
+ * @returns {boolean}
+ */
+export function getCustomShareInfoText(state: Object) {
+    return state['features/base/config']?.customShareInfoText;
+}
+
 /* eslint-enable max-params */

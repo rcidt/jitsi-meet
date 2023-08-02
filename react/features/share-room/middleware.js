@@ -1,6 +1,6 @@
 // @flow
 
-import { Share } from 'react-native';
+import { Alert, Share } from 'react-native';
 
 import { getName } from '../app/functions';
 import { MiddlewareRegistry } from '../base/redux';
@@ -9,6 +9,7 @@ import { getShareInfoText } from '../invite';
 import { BEGIN_SHARE_ROOM } from './actionTypes';
 import { endShareRoom } from './actions';
 import logger from './logger';
+import { getCustomShareInfoText } from '../base/config/functions.any';
 
 /**
  * Middleware that captures room URL sharing actions and starts the sharing
@@ -35,31 +36,31 @@ MiddlewareRegistry.register(store => next => action => {
  * @private
  * @returns {void}
  */
-function _shareRoom(roomURL: string, { dispatch, getState }) {
-    getShareInfoText(getState(), roomURL)
-        .then(message => {
-            const title = `${getName()} Conference`;
-            const onFulfilled
-                = (shared: boolean) => dispatch(endShareRoom(roomURL, shared));
+async function _shareRoom(roomURL: string, { dispatch, getState }) {
+    const {
+        customShareInfoText,
+        callDisplayName
+    } = getState()['features/base/config'];
 
-            Share.share(
-                /* content */ {
-                    message,
-                    title
-                },
-                /* options */ {
-                    dialogTitle: title, // Android
-                    subject: title // iOS
-                })
-                .then(
-                    /* onFulfilled */ value => {
-                        onFulfilled(value.action === Share.sharedAction);
-                    },
-                    /* onRejected */ reason => {
-                        logger.error(
-                            `Failed to share conference/room URL ${roomURL}:`,
-                            reason);
-                        onFulfilled(false);
-                    });
-        });
+    const onFulfilled = (shared: boolean) => dispatch(endShareRoom(roomURL, shared));
+
+    Share.share(
+        /* content */ {
+            message: customShareInfoText || callDisplayName,
+            title: callDisplayName
+        },
+        /* options */ {
+            dialogTitle: callDisplayName, // Android
+            subject: callDisplayName// iOS
+        })
+        .then(
+            /* onFulfilled */ value => {
+                onFulfilled(value.action === Share.sharedAction);
+            },
+            /* onRejected */ reason => {
+                logger.error(
+                    `Failed to share conference/room URL ${roomURL}:`,
+                    reason);
+                onFulfilled(false);
+            });
 }

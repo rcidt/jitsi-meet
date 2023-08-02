@@ -4,14 +4,17 @@ set -e -u
 
 
 THIS_DIR=$(cd -P "$(dirname "$(readlink "${BASH_SOURCE[0]}" || echo "${BASH_SOURCE[0]}")")" && pwd)
-DEFAULT_MVN_REPO="${THIS_DIR}/../../../jitsi-maven-repository/releases"
+DEFAULT_MVN_REPO="$THIS_DIR/../sdk/out"
 THE_MVN_REPO=${MVN_REPO:-${1:-$DEFAULT_MVN_REPO}}
 MVN_HTTP=0
 DEFAULT_SDK_VERSION=$(grep sdkVersion ${THIS_DIR}/../gradle.properties | cut -d"=" -f2)
 SDK_VERSION=${OVERRIDE_SDK_VERSION:-${DEFAULT_SDK_VERSION}}
 RN_VERSION=$(jq -r '.version' ${THIS_DIR}/../../node_modules/react-native/package.json)
-JSC_VERSION="r"$(jq -r '.dependencies."jsc-android"' ${THIS_DIR}/../../node_modules/react-native/package.json | cut -d . -f 1 | cut -c 2-)
+JSC_VERSION="r250230" #"r"$(jq -r '.dependencies."jsc-android"' ${THIS_DIR}/../../node_modules/react-native/package.json | cut -d . -f 1 | cut -c 2-)
 DO_GIT_TAG=${GIT_TAG:-0}
+
+rm -rf "$THIS_DIR/../sdk/out"
+mkdir "$THIS_DIR/../sdk/out"
 
 if [[ $THE_MVN_REPO == http* ]]; then
     MVN_HTTP=1
@@ -94,15 +97,29 @@ pushd ${THIS_DIR}/../
 ./gradlew publish
 popd
 
-if [[ $DO_GIT_TAG == 1 ]]; then
-    # The artifacts are now on the Maven repo, commit them
-    pushd ${MVN_REPO_PATH}
-    git add -A .
-    git commit -m "Jitsi Meet SDK + dependencies: ${SDK_VERSION}"
-    popd
+if [ "$N2P_JITSI_RELEASE_REPO" ]; then
+	echo "Begin copying artifacts to $N2P_JITSI_RELEASE_REPO"
 
-    # Tag the release
-    git tag android-sdk-${SDK_VERSION}
+	pushd ${N2P_JITSI_RELEASE_REPO}/android
+
+	echo "Cleaning target dir"
+	rm -rf ./*
+
+	# Put the new files in the repo
+	cp -rf ${MVN_REPO_PATH}/* ./
+	echo "Artifacts copied to $N2P_JITSI_RELEASE_REPO"
+
+
+	if [[ $DO_GIT_TAG == 1 ]]; then
+	    # The artifacts are now on the Maven repo, commit them
+	    git add -A .
+	    git commit -m "Jitsi Meet SDK + dependencies: ${SDK_VERSION}"
+
+	    # Tag the release
+	    git tag android-sdk-${SDK_VERSION}
+	fi
+
+	popd
 fi
 
 # Done!

@@ -501,6 +501,13 @@ export function searchDirectory( // eslint-disable-line max-params
  */
 export function getShareInfoText(
         state: Object, inviteUrl: string, useHtml: ?boolean): Promise<string> {
+
+    const customShareInfoText = state['features/base/config'].customShareInfoText;
+
+    if (customShareInfoText) {
+        return Promise.resolve(customShareInfoText);
+    }
+
     let roomUrl = _decodeRoomURI(inviteUrl);
     const includeDialInfo = state['features/base/config'] !== undefined;
 
